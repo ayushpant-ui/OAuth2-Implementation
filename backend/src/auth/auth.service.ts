@@ -4,6 +4,7 @@ import {createHash, randomBytes} from 'crypto'
 
 @Injectable()
 export class AuthService {
+    constructor(private readonly configservice:ConfigService){}
 
     // Temperary storage for OAuth Transaction 
     // Can replace later with redis 
@@ -38,7 +39,47 @@ export class AuthService {
         //constructing Google authorisation URL 
         const googleAuthURL = new URL ( 
            'https://accounts.google.com/o/oauth2/v2/auth',
+        );
+
+        googleAuthURL.searchParams.set(
+            'client_id',
+            this.configservice.getOrThrow<string>('GOOGLE_CLIENT_ID')
         )
 
+        googleAuthURL.searchParams.set(
+            'redirect_uri',
+            this.configservice.getOrThrow<string>('GOOGLE_CALLBACK_URL')
+        )
+
+        googleAuthURL.searchParams.set(
+            'response_code',
+            'code'
+        )
+
+        googleAuthURL.searchParams.set(
+            'scope',
+            'openid email profile'
+        )
+
+        googleAuthURL.searchParams.set(
+            'state',state
+        )
+
+        googleAuthURL.searchParams.set(
+            'code_challenger',
+            codeChallenger
+        )
+
+        googleAuthURL.searchParams.set(
+            'code_challenge_method',
+            'S256'
+        )
+
+        googleAuthURL.searchParams.set('nounce',nounce)
+    
+    return{
+        url:googleAuthURL.toString(),
+        state
     }
+}
 }
