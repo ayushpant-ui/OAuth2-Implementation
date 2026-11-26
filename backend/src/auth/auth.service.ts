@@ -25,7 +25,7 @@ export class AuthService {
         const codeVerifier = randomBytes(32).toString('base64url')
 
         //Generating PKCE Code Challenger 
-        const codeChallenger = createHash(codeVerifier).update(codeVerifier).digest('base64url');
+        const codeChallenger = createHash('sha256').update(codeVerifier).digest('base64url');
 
         // Generating OICD nounce 
         const nounce = randomBytes(32).toString('hex');
